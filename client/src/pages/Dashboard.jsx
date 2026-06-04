@@ -1,0 +1,325 @@
+import toast from "react-hot-toast";
+import { useState, useEffect } from "react";
+import axios from "axios";
+
+import {
+  FaHome,
+  FaHistory,
+  FaRobot,
+  FaSignOutAlt
+} from "react-icons/fa";
+
+function Dashboard() {
+
+  const [role, setRole] = useState("");
+  const [difficulty, setDifficulty] = useState("");
+  const [questions, setQuestions] = useState("");
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+
+    const fetchHistory = async () => {
+
+      try {
+
+        const res = await axios.get(
+          "http://localhost:5000/api/interview/history"
+        );
+
+        setHistory(res.data);
+
+      } catch (err) {
+
+        console.log(err);
+
+      }
+
+    };
+
+    fetchHistory();
+
+  }, []);
+
+  const generateQuestions = async () => {
+
+    try {
+
+      setQuestions("");
+
+      setLoading(true);
+
+      toast.loading("Generating AI Questions...", {
+        id: "generate"
+      });
+
+      const res = await axios.post(
+        "http://localhost:5000/api/ai/generate",
+        {
+          role,
+          difficulty
+        }
+      );
+
+      setQuestions(res.data.questions);
+
+      const historyRes = await axios.get(
+        "http://localhost:5000/api/interview/history"
+      );
+
+      setHistory(historyRes.data);
+
+      toast.success("Questions Generated Successfully", {
+        id: "generate"
+      });
+
+      setLoading(false);
+
+    } catch (err) {
+
+      console.log(err);
+
+      toast.error("AI Generation Failed", {
+        id: "generate"
+      });
+
+      setLoading(false);
+
+    }
+
+  };
+
+  return (
+
+    <div className="flex min-h-screen bg-black text-white">
+
+      {/* SIDEBAR */}
+
+      <div className="w-72 bg-gray-950 border-r border-gray-800 p-8 flex flex-col justify-between">
+
+        <div>
+
+          <h1 className="text-3xl font-extrabold mb-12 text-blue-500">
+            AI Interview
+          </h1>
+
+          <div className="space-y-6">
+
+            <div className="flex items-center gap-4 text-lg text-gray-300 hover:text-blue-400 transition cursor-pointer">
+              <FaHome />
+              <span>Dashboard</span>
+            </div>
+
+            <div className="flex items-center gap-4 text-lg text-gray-300 hover:text-blue-400 transition cursor-pointer">
+              <FaRobot />
+              <span>Generate Questions</span>
+            </div>
+
+            <div className="flex items-center gap-4 text-lg text-gray-300 hover:text-blue-400 transition cursor-pointer">
+              <FaHistory />
+              <span>Interview History</span>
+            </div>
+
+          </div>
+
+        </div>
+
+        <button
+          onClick={() => {
+
+            localStorage.removeItem("token");
+
+            window.location.href = "/login";
+
+          }}
+          className="flex items-center justify-center gap-3 bg-red-500 hover:bg-red-600 transition py-3 rounded-xl font-bold"
+        >
+          <FaSignOutAlt />
+          Logout
+        </button>
+
+      </div>
+
+      {/* MAIN CONTENT */}
+
+      <div className="flex-1 p-10 overflow-y-auto">
+
+        {/* HEADER */}
+
+        <div className="mb-10">
+
+          <h1 className="text-5xl font-extrabold mb-3">
+            AI Interview Dashboard
+          </h1>
+
+          <p className="text-gray-400 text-lg">
+            Practice role-based interviews powered by AI
+          </p>
+
+        </div>
+
+        {/* STATS */}
+
+        <div className="grid md:grid-cols-3 gap-6 mb-10">
+
+          <div className="bg-gray-900 border border-gray-800 p-8 rounded-3xl shadow-xl">
+
+            <h2 className="text-gray-400 text-lg">
+              Total Interviews
+            </h2>
+
+            <p className="text-5xl font-bold mt-3 text-blue-400">
+              {history.length}
+            </p>
+
+          </div>
+
+          <div className="bg-gray-900 border border-gray-800 p-8 rounded-3xl shadow-xl">
+
+            <h2 className="text-gray-400 text-lg">
+              AI Status
+            </h2>
+
+            <p className="text-3xl font-bold mt-3 text-green-400">
+              Active
+            </p>
+
+          </div>
+
+          <div className="bg-gray-900 border border-gray-800 p-8 rounded-3xl shadow-xl">
+
+            <h2 className="text-gray-400 text-lg">
+              Platform
+            </h2>
+
+            <p className="text-3xl font-bold mt-3 text-purple-400">
+              MERN + AI
+            </p>
+
+          </div>
+
+        </div>
+
+        {/* FORM */}
+
+        <div className="bg-gray-900 border border-gray-800 p-8 rounded-3xl shadow-2xl mb-10">
+
+          <h2 className="text-3xl font-bold mb-6">
+            Generate Interview Questions
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-6">
+
+            <input
+              type="text"
+              placeholder="Enter Role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="p-4 rounded-xl bg-gray-800 border border-gray-700 outline-none focus:border-blue-500"
+            />
+
+            <input
+              type="text"
+              placeholder="Difficulty"
+              value={difficulty}
+              onChange={(e) => setDifficulty(e.target.value)}
+              className="p-4 rounded-xl bg-gray-800 border border-gray-700 outline-none focus:border-blue-500"
+            />
+
+          </div>
+
+          <button
+            onClick={generateQuestions}
+            className="mt-6 bg-blue-500 hover:bg-blue-600 transition px-8 py-4 rounded-xl font-bold text-lg shadow-lg"
+          >
+            Generate Questions
+          </button>
+
+        </div>
+
+        {/* LOADING */}
+
+        {
+          loading && (
+
+            <div className="bg-yellow-500/10 border border-yellow-500 text-yellow-400 p-5 rounded-2xl mb-8 text-lg animate-pulse">
+
+              Generating AI Questions...
+
+            </div>
+
+          )
+        }
+
+        {/* GENERATED QUESTIONS */}
+
+        {
+          questions && (
+
+            <div className="bg-gray-900 border border-gray-800 p-8 rounded-3xl shadow-2xl mb-12">
+
+              <h2 className="text-3xl font-bold mb-6 text-blue-400">
+                Generated Questions
+              </h2>
+
+              <pre className="whitespace-pre-wrap text-gray-200 leading-8 text-lg">
+                {questions}
+              </pre>
+
+            </div>
+
+          )
+        }
+
+        {/* HISTORY */}
+
+        <div className="mb-6">
+
+          <h2 className="text-3xl font-bold">
+            Interview History
+          </h2>
+
+        </div>
+
+        <div className="grid gap-6">
+
+          {
+            history.map((item) => (
+
+              <div
+                key={item._id}
+                className="bg-gray-900 border border-gray-800 p-8 rounded-3xl shadow-xl"
+              >
+
+                <div className="flex justify-between items-center mb-5">
+
+                  <h3 className="text-2xl font-bold text-blue-400">
+                    {item.role}
+                  </h3>
+
+                  <span className="bg-green-500/20 text-green-400 px-4 py-2 rounded-lg font-semibold">
+                    {item.difficulty}
+                  </span>
+
+                </div>
+
+                <pre className="whitespace-pre-wrap text-gray-300 leading-8">
+                  {item.questions}
+                </pre>
+
+              </div>
+
+            ))
+          }
+
+        </div>
+
+      </div>
+
+    </div>
+
+  );
+
+}
+
+export default Dashboard;
