@@ -7,6 +7,7 @@ const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
 const aiRoutes = require("./routes/aiRoutes");
 const interviewRoutes = require("./routes/interviewRoutes");
+const evaluateRoutes = require("./routes/evaluateRoutes");
 
 const authMiddleware = require("./middleware/authMiddleware");
 
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/interview", interviewRoutes);
+app.use("/api/evaluate", evaluateRoutes);
 
 mongoose.connect(process.env.MONGO_URI)
 .then(() => {

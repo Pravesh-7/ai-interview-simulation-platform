@@ -16,6 +16,10 @@ function Dashboard() {
   const [questions, setQuestions] = useState("");
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [answers, setAnswers] = useState("");
+  const [feedback, setFeedback] = useState("");
+  const [evaluating, setEvaluating] = useState(false);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
 
@@ -23,8 +27,13 @@ function Dashboard() {
 
       try {
 
-        const res = await axios.get(
-          "http://localhost:5000/api/interview/history"
+       const res = await axios.get(
+          "http://localhost:5000/api/interview/history",
+          {
+            headers: {
+              authorization: token
+            }
+          }
         );
 
         setHistory(res.data);
@@ -46,6 +55,8 @@ function Dashboard() {
     try {
 
       setQuestions("");
+      setAnswers("");
+      setFeedback("");
 
       setLoading(true);
 
@@ -58,13 +69,23 @@ function Dashboard() {
         {
           role,
           difficulty
+        },
+        {
+          headers: {
+            authorization: token
+          }
         }
       );
 
       setQuestions(res.data.questions);
 
       const historyRes = await axios.get(
-        "http://localhost:5000/api/interview/history"
+        "http://localhost:5000/api/interview/history",
+        {
+          headers: {
+            authorization: token
+          }
+        }
       );
 
       setHistory(historyRes.data);
@@ -84,6 +105,46 @@ function Dashboard() {
       });
 
       setLoading(false);
+
+    }
+
+  };
+
+  const evaluateAnswers = async () => {
+
+    try {
+
+      setEvaluating(true);
+
+      toast.loading("Evaluating Answers...", {
+        id: "evaluate"
+      });
+
+      const res = await axios.post(
+        "http://localhost:5000/api/evaluate",
+        {
+          questions,
+          answers
+        }
+      );
+
+      setFeedback(res.data.feedback);
+
+      toast.success("Evaluation Complete", {
+        id: "evaluate"
+      });
+
+      setEvaluating(false);
+
+    } catch (err) {
+
+      console.log(err);
+
+      toast.error("Evaluation Failed", {
+        id: "evaluate"
+      });
+
+      setEvaluating(false);
 
     }
 
@@ -270,6 +331,54 @@ function Dashboard() {
 
           )
         }
+
+        {
+          questions && (
+
+            <div className="bg-gray-900 border border-gray-800 p-8 rounded-3xl shadow-2xl mb-10">
+
+              <h2 className="text-3xl font-bold mb-6 text-green-400">
+              Your Answers
+              </h2>
+
+              <textarea
+                rows="12"
+                placeholder="Type your answers here..."
+                value={answers}
+                onChange={(e) => setAnswers(e.target.value)}
+                className="w-full bg-gray-800 border border-gray-700 rounded-xl p-4 text-white outline-none focus:border-green-500"
+              />
+
+              <button
+                onClick={evaluateAnswers}
+                disabled={evaluating}
+                className="mt-6 bg-green-500 hover:bg-green-600 disabled:bg-gray-600 transition px-8 py-4 rounded-xl font-bold text-lg shadow-lg"
+              >
+               {evaluating ? "Evaluating..." : "Evaluate Answers"}
+              </button>
+
+            </div>
+
+          )
+       }
+         
+     {
+        feedback && (
+
+          <div className="bg-gray-900 border border-gray-800 p-8 rounded-3xl shadow-2xl mb-10">
+
+            <h2 className="text-3xl font-bold text-yellow-400 mb-6">
+              AI Feedback
+            </h2>
+
+            <pre className="whitespace-pre-wrap text-gray-200 leading-8">
+              {feedback}
+            </pre>
+
+          </div>
+
+        )
+      }
 
         {/* HISTORY */}
 
