@@ -274,13 +274,13 @@ function Dashboard() {
   };
 
   const stopRecording = () => {
-
-    if (!recognition) return;
-
-    recognition.stop();
-
     setIsRecording(false);
-
+    if (!recognition) return;
+    try {
+      recognition.stop();
+    } catch (e) {
+      console.log("Speech recognition stop error", e);
+    }
   };
 
   const speakQuestions = () => {
