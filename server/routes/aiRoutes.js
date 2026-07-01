@@ -17,7 +17,7 @@ router.post(
 
   try {
 
-    const { role, difficulty } = req.body;
+    const { role, difficulty, questionCount = 5 } = req.body;
 
     const completion = await client.chat.completions.create({
 
@@ -27,7 +27,7 @@ router.post(
         {
           role: "user",
           content: `
-          Generate 5 interview questions for a ${role} role.
+          Generate ${questionCount} interview questions for a ${role} role.
 
           Difficulty: ${difficulty}.
 

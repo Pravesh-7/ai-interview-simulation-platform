@@ -13,40 +13,108 @@ function Dashboard() {
 
   const [role, setRole] = useState("");
   const [difficulty, setDifficulty] = useState("");
+  const [questionCount, setQuestionCount] = useState("5");
   const [questions, setQuestions] = useState("");
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [answers, setAnswers] = useState("");
+  const [isRecording, setIsRecording] = useState(false);
+  const [recognition, setRecognition] = useState(null);
   const [feedback, setFeedback] = useState("");
+  const [isSpeaking, setIsSpeaking] = useState(false);  
   const [evaluating, setEvaluating] = useState(false);
   const token = localStorage.getItem("token");
 
+  const fetchHistory = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/interview/history",
+        {
+          headers: {
+            authorization: token
+          }
+        }
+      );
+      setHistory(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchHistory();
+  }, []);
+
+  const deleteInterview = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this interview?")) return;
+    try {
+      await axios.delete(`http://localhost:5000/api/interview/${id}`, {
+        headers: { authorization: token }
+      });
+      toast.success("Interview deleted");
+      fetchHistory();
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to delete interview");
+    }
+  };
+
+  const deleteAllInterviews = async () => {
+    if (history.length === 0) return;
+    if (!window.confirm("Are you sure you want to delete ALL interviews? This cannot be undone.")) return;
+    try {
+      await axios.delete(`http://localhost:5000/api/interview`, {
+        headers: { authorization: token }
+      });
+      toast.success("All interviews deleted");
+      setHistory([]);
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to delete interviews");
+    }
+  };
+
   useEffect(() => {
 
-    const fetchHistory = async () => {
+    const SpeechRecognition =
+      window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
 
-      try {
+    if (!SpeechRecognition) {
+      return;
+    }
 
-       const res = await axios.get(
-          "http://localhost:5000/api/interview/history",
-          {
-            headers: {
-              authorization: token
-            }
-          }
-        );
+    const recognitionInstance = new SpeechRecognition();
 
-        setHistory(res.data);
+    recognitionInstance.continuous = true;
+    recognitionInstance.interimResults = true;
+    recognitionInstance.lang = "en-US";
 
-      } catch (err) {
+    recognitionInstance.onresult = (event) => {
 
-        console.log(err);
+    let transcript = "";
 
-      }
+    for (
+      let i = event.resultIndex;
+      i < event.results.length;
+      i++
+    ) {
+
+      transcript += event.results[i][0].transcript;
+
+    }
+
+    setAnswers(transcript);
+
+   };
+
+    recognitionInstance.onend = () => {
+
+      setIsRecording(false);
 
     };
 
-    fetchHistory();
+    setRecognition(recognitionInstance);
 
   }, []);
 
@@ -68,7 +136,8 @@ function Dashboard() {
         "http://localhost:5000/api/ai/generate",
         {
           role,
-          difficulty
+          difficulty,
+          questionCount
         },
         {
           headers: {
@@ -109,6 +178,66 @@ function Dashboard() {
     }
 
   };
+
+  const startRecording = () => {
+
+    if (!recognition) return;
+
+    setAnswers("");
+
+    recognition.start();
+
+    setIsRecording(true);
+
+  };
+
+  const stopRecording = () => {
+
+    if (!recognition) return;
+
+    recognition.stop();
+
+    setIsRecording(false);
+
+  };
+
+  const speakQuestions = () => {
+
+    if (!questions) return;
+
+    window.speechSynthesis.cancel();
+
+    const speech = new SpeechSynthesisUtterance(questions);
+
+    speech.lang = "en-US";
+
+    speech.rate = 1;
+
+    speech.pitch = 1;
+
+    speech.onstart = () => {
+
+    setIsSpeaking(true);
+
+  };
+
+  speech.onend = () => {
+
+    setIsSpeaking(false);
+
+  };
+
+  window.speechSynthesis.speak(speech);
+
+};
+
+const stopSpeaking = () => {
+
+  window.speechSynthesis.cancel();
+
+  setIsSpeaking(false);
+
+};
 
   const evaluateAnswers = async () => {
 
@@ -287,6 +416,16 @@ function Dashboard() {
               className="p-4 rounded-xl bg-gray-800 border border-gray-700 outline-none focus:border-blue-500"
             />
 
+            <input
+              type="number"
+              min="1"
+              max="50"
+              placeholder="Questions (1-50)"
+              value={questionCount}
+              onChange={(e) => setQuestionCount(e.target.value)}
+              className="p-4 rounded-xl bg-gray-800 border border-gray-700 outline-none focus:border-blue-500"
+            />
+
           </div>
 
           <button
@@ -322,6 +461,32 @@ function Dashboard() {
               <h2 className="text-3xl font-bold mb-6 text-blue-400">
                 Generated Questions
               </h2>
+              <div className="flex gap-4 mb-6">
+
+              <button
+                  onClick={speakQuestions}
+                  className="bg-purple-500 hover:bg-purple-600 px-6 py-3 rounded-xl font-bold"
+                >
+                  🔊 Read Questions
+                </button>
+
+                <button
+                  onClick={stopSpeaking}
+                  className="bg-red-500 hover:bg-red-600 px-6 py-3 rounded-xl font-bold"
+                >
+                  ⏹ Stop Reading
+                </button>
+                              {
+                isSpeaking && (
+
+                  <p className="text-purple-400 font-bold mb-5 animate-pulse">
+                    🔊 AI is reading the questions...
+                  </p>
+
+                )
+                }
+
+             </div>
 
               <pre className="whitespace-pre-wrap text-gray-200 leading-8 text-lg">
                 {questions}
@@ -340,6 +505,33 @@ function Dashboard() {
               <h2 className="text-3xl font-bold mb-6 text-green-400">
               Your Answers
               </h2>
+
+              <div className="flex gap-4 mb-5">
+
+                <button
+                  onClick={startRecording}
+                  className="bg-blue-500 hover:bg-blue-600 px-6 py-3 rounded-xl font-bold"
+                >
+                  🎤 Start Recording
+                </button>
+
+                <button
+                  onClick={stopRecording}
+                  className="bg-red-500 hover:bg-red-600 px-6 py-3 rounded-xl font-bold"
+                >
+                  🛑 Stop Recording
+                </button>
+
+                {
+                  isRecording && (
+
+                    <p className="text-red-400 font-bold mb-4 animate-pulse">
+                      🎙 Listening...
+                    </p>
+
+                  )
+                }
+              </div>
 
               <textarea
                 rows="12"
@@ -382,11 +574,20 @@ function Dashboard() {
 
         {/* HISTORY */}
 
-        <div className="mb-6">
+        <div className="mb-6 flex justify-between items-center">
 
           <h2 className="text-3xl font-bold">
             Interview History
           </h2>
+
+          {history.length > 0 && (
+            <button 
+              onClick={deleteAllInterviews}
+              className="bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition px-4 py-2 rounded-xl font-bold"
+            >
+              Delete All
+            </button>
+          )}
 
         </div>
 
@@ -402,13 +603,21 @@ function Dashboard() {
 
                 <div className="flex justify-between items-center mb-5">
 
-                  <h3 className="text-2xl font-bold text-blue-400">
-                    {item.role}
-                  </h3>
+                  <div className="flex items-center gap-4">
+                    <h3 className="text-2xl font-bold text-blue-400">
+                      {item.role}
+                    </h3>
+                    <span className="bg-green-500/20 text-green-400 px-4 py-2 rounded-lg font-semibold">
+                      {item.difficulty}
+                    </span>
+                  </div>
 
-                  <span className="bg-green-500/20 text-green-400 px-4 py-2 rounded-lg font-semibold">
-                    {item.difficulty}
-                  </span>
+                  <button
+                    onClick={() => deleteInterview(item._id)}
+                    className="text-red-400 hover:text-red-300 font-bold px-3 py-1 bg-gray-800 rounded-lg"
+                  >
+                    Delete
+                  </button>
 
                 </div>
 

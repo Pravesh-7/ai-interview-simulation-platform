@@ -14,23 +14,24 @@ An AI-powered interview preparation platform built with the **MERN Stack** and *
 
 - 🎯 **Role-Based Question Generation** — Generates tailored interview questions based on job role (e.g., SDE, Frontend Developer, Data Analyst)
 - ⚙️ **Difficulty Levels** — Choose from Easy, Medium, or Hard to match your preparation stage
+- 🔢 **[NEW] Customizable Question Count** — Choose between 1 to 50 questions
 - 🧠 **AI-Powered Answer Evaluation** — Evaluates responses using Google Gemini API with semantic understanding
+- 🗣️ **Voice Features** — Speech-to-Text (Voice Answering) and Text-to-Speech (AI Reads Questions)
 - 📊 **Score & Feedback** — Provides a score and constructive feedback for each answer
 - 🔐 **User Authentication** — Secure login/signup with JWT-based auth
-- 📁 **Interview History** — Review past interview sessions and track improvement
+- 📁 **Interview History & Management** — Review past interview sessions, track improvement, and delete individual or all sessions
+- 🔔 **Responsive UI** — Beautifully designed UI with Toast Notifications
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | React.js, Tailwind CSS |
-| Backend | Node.js, Express.js |
-| Database | MongoDB (Mongoose) |
-| AI Engine | Google Gemini API |
-| Auth | JWT (JSON Web Tokens) |
-| Deployment | Vercel (client), Render (server) |
+- **Frontend**: React (Vite), Tailwind CSS, React Router, Axios, React Hot Toast, React Icons
+- **Backend**: Node.js, Express.js
+- **Database**: MongoDB (Mongoose)
+- **AI Engine**: Google Gemini API / HuggingFace compatible APIs
+- **Auth**: JWT (JSON Web Tokens)
+- **Deployment**: Vercel (client), Render (server)
 
 ---
 
@@ -38,20 +39,20 @@ An AI-powered interview preparation platform built with the **MERN Stack** and *
 
 ```
 ai-interview-simulation-platform/
-├── client/                  # React frontend
+├── client/                 # Frontend React (Vite) application
+│   ├── public/             # Static assets
 │   ├── src/
-│   │   ├── components/      # Reusable UI components
-│   │   ├── pages/           # Route-level pages
-│   │   └── services/        # API call handlers
-│   └── public/
-├── server/                  # Express backend
-│   ├── controllers/         # Business logic
-│   ├── models/              # Mongoose schemas
-│   ├── routes/              # API routes
-│   └── middleware/          # Auth & error handling
-├── .gitignore
-├── package.json
-└── README.md
+│   │   ├── components/     # Reusable UI components
+│   │   ├── pages/          # Application views (e.g., Dashboard.jsx)
+│   │   ├── App.jsx         # App routing
+│   │   └── main.jsx        # App entry point
+│   └── package.json        # Frontend dependencies
+└── server/                 # Backend Node.js/Express application
+    ├── middleware/         # Custom Express middleware (e.g., auth)
+    ├── models/             # Mongoose schemas (User, Interview)
+    ├── routes/             # API endpoints (aiRoutes, authRoutes, evaluateRoutes, interviewRoutes)
+    ├── server.js           # Server entry point
+    └── package.json        # Backend dependencies
 ```
 
 ---
@@ -62,7 +63,7 @@ ai-interview-simulation-platform/
 
 - Node.js v18+
 - MongoDB (local or Atlas)
-- Google Gemini API key ([Get one here](https://makersuite.google.com/app/apikey))
+- Google Gemini API key / HF Token
 
 ### 1. Clone the repository
 
@@ -79,38 +80,67 @@ npm install
 ```
 
 Create a `.env` file in `/server`:
-
 ```env
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
-GEMINI_API_KEY=your_google_gemini_api_key
+HF_TOKEN=your_huggingface_api_token
+# or GEMINI_API_KEY=your_google_gemini_api_key
 ```
 
+Run the server:
 ```bash
-npm run dev
+npm start
 ```
 
 ### 3. Setup the Client
 
 ```bash
-cd client
+cd ../client
 npm install
-npm start
+npm run dev
 ```
 
-App runs at `http://localhost:3000`
+App runs at `http://localhost:5173` (or the port Vite chooses).
 
 ---
 
 ## 🧠 How It Works
 
-1. **User selects** a job role and difficulty level
-2. **Gemini API generates** 10 tailored interview questions
-3. **User answers** each question in the platform
-4. **Gemini evaluates** the answer for accuracy, relevance, and depth
-5. **Score + feedback** is displayed per question with an overall session score
-6. Results are saved to **MongoDB** for future reference
+1. **User selects** a job role, difficulty level, and number of questions (1-50).
+2. **AI generates** tailored interview questions via the `deepseek-ai` or Gemini model.
+3. **User answers** each question in the platform (via text or voice).
+4. **AI evaluates** the answer for accuracy, relevance, and depth.
+5. **Score + feedback** is displayed.
+6. Results are saved to **MongoDB** for future reference.
+
+---
+
+## 🌐 API Documentation
+
+- **POST /api/auth/register**: Register a new user
+- **POST /api/auth/login**: Login and receive JWT
+- **GET /api/interview/history**: Fetch user's interview history
+- **DELETE /api/interview/:id**: Delete a single interview
+- **DELETE /api/interview**: Delete all interviews for the user
+- **POST /api/ai/generate**: Generate interview questions (Body: `{ role, difficulty, questionCount }`)
+- **POST /api/evaluate**: Evaluate answers (Body: `{ questions, answers }`)
+
+---
+
+## 🗄️ Database Schema
+
+### User
+- `name` (String)
+- `email` (String, Unique)
+- `password` (String)
+
+### Interview
+- `user` (ObjectId, Ref: 'User')
+- `role` (String)
+- `difficulty` (String)
+- `questions` (String)
+- `createdAt` (Date)
 
 ---
 
@@ -122,11 +152,16 @@ App runs at `http://localhost:3000`
 
 ## 🔮 Future Enhancements
 
-- [ ] Voice-based interview mode (Speech-to-Text)
+- [ ] Advanced AI Scoring System & Performance Dashboard
 - [ ] Resume upload for personalized question generation
 - [ ] Leaderboard for competitive practice
-- [ ] PDF export of interview report
+- [ ] Downloadable PDF export of interview report
 - [ ] Multi-language support
+- [ ] Achievements and Badges
+
+## ⚠️ Known Limitations
+- The accuracy of speech-to-text relies on native browser APIs.
+- AI generation speed is dependent on the external HuggingFace/Gemini API latency.
 
 ---
 
