@@ -34,13 +34,13 @@ try {
   toast.error("Registration Failed");
 
 }
-```
+
 
 };
 
 return (
 
-```
+
 <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-blue-950 text-white">
 
   <div className="w-full max-w-md bg-gray-900/70 backdrop-blur-lg border border-gray-800 p-10 rounded-3xl shadow-2xl">
