@@ -1,20 +1,13 @@
 import toast from "react-hot-toast";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  FaHome,
-  FaHistory,
-  FaRobot,
-  FaSignOutAlt
-} from "react-icons/fa";
-
 // Components
+import Sidebar from "../components/layout/Sidebar";
 import PerformanceCharts from "../components/dashboard/PerformanceCharts";
 import InterviewGenerator from "../components/dashboard/InterviewGenerator";
 import Timer from "../components/dashboard/Timer";
 import WebcamSimulation from "../components/dashboard/WebcamSimulation";
 import CodeEditor from "../components/dashboard/CodeEditor";
-import InterviewHistory from "../components/dashboard/InterviewHistory";
 
 function Dashboard() {
   const [history, setHistory] = useState([]);
@@ -48,30 +41,9 @@ function Dashboard() {
     fetchHistory();
   }, []);
 
-  const deleteInterview = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this interview?")) return;
-    try {
-      await axios.delete(`http://localhost:5000/api/interview/${id}`, { headers: { authorization: token } });
-      toast.success("Interview deleted");
-      fetchHistory();
-    } catch (err) {
-      console.log(err);
-      toast.error("Failed to delete interview");
-    }
-  };
-
-  const deleteAllInterviews = async () => {
-    if (history.length === 0) return;
-    if (!window.confirm("Are you sure you want to delete ALL interviews? This cannot be undone.")) return;
-    try {
-      await axios.delete(`http://localhost:5000/api/interview`, { headers: { authorization: token } });
-      toast.success("All interviews deleted");
-      setHistory([]);
-    } catch (err) {
-      console.log(err);
-      toast.error("Failed to delete interviews");
-    }
-  };
+  useEffect(() => {
+    fetchHistory();
+  }, []);
 
   // Speech Recognition Setup
   useEffect(() => {
@@ -198,11 +170,6 @@ function Dashboard() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const scrollToHistory = (e) => {
-    e.preventDefault();
-    document.getElementById('history-section')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   const scrollToTop = (e) => {
     e.preventDefault();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -211,28 +178,7 @@ function Dashboard() {
   return (
     <div className="flex min-h-screen bg-black text-white">
       {/* SIDEBAR */}
-      <div className="w-64 bg-gray-900 border-r border-gray-800 p-6 flex flex-col justify-between hidden md:flex">
-        <div>
-          <div className="flex items-center gap-3 mb-12">
-            <FaRobot className="text-4xl text-blue-500" />
-            <h1 className="text-2xl font-black tracking-tight text-white">Intervu<span className="text-blue-500">.ai</span></h1>
-          </div>
-          <nav className="space-y-4">
-            <a href="#" onClick={scrollToTop} className="flex items-center gap-4 text-blue-400 bg-blue-500/10 px-4 py-3 rounded-xl font-bold transition">
-              <FaHome /> Dashboard
-            </a>
-            <a href="#" onClick={scrollToHistory} className="flex items-center gap-4 text-gray-400 hover:text-white hover:bg-gray-800 px-4 py-3 rounded-xl font-bold transition">
-              <FaHistory /> History
-            </a>
-          </nav>
-        </div>
-        <button 
-          onClick={() => { localStorage.removeItem("token"); window.location.href = "/"; }}
-          className="flex items-center justify-center gap-3 bg-gray-800 hover:bg-red-500/20 hover:text-red-500 text-gray-400 transition p-4 rounded-xl font-bold"
-        >
-          <FaSignOutAlt /> Logout
-        </button>
-      </div>
+      <Sidebar />
 
       {/* MAIN CONTENT */}
       <div className="flex-1 p-8 md:p-12 overflow-y-auto">
@@ -371,12 +317,6 @@ function Dashboard() {
               </div>
             </div>
           )}
-
-          <InterviewHistory 
-            history={history} 
-            onDelete={deleteInterview} 
-            onDeleteAll={deleteAllInterviews} 
-          />
 
         </div>
       </div>

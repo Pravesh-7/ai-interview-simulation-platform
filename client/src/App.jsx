@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Landing from "./pages/Landing";
+import History from "./pages/History";
 
 function App() {
 
@@ -25,6 +26,13 @@ function App() {
           path="/dashboard"
           element={
             token ? <Dashboard /> : <Navigate to="/login" />
+          }
+        />
+
+        <Route
+          path="/history"
+          element={
+            token ? <History /> : <Navigate to="/login" />
           }
         />
 
