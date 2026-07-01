@@ -6,6 +6,13 @@ import InterviewHistory from "../components/dashboard/InterviewHistory";
 
 export default function History() {
   const [history, setHistory] = useState([]);
+  
+  // Filter & Sort States
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterDifficulty, setFilterDifficulty] = useState("");
+  const [filterDate, setFilterDate] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
+
   const token = localStorage.getItem("token");
 
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -74,16 +81,95 @@ export default function History() {
             </div>
           </div>
 
+          {/* Filters & Search */}
+          {history.length > 0 && (
+            <div className="bg-gray-900 border border-gray-800 p-6 rounded-2xl mb-8 flex flex-col md:flex-row gap-4 items-center">
+              <input
+                type="text"
+                placeholder="Search by Role..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-gray-800 text-white px-4 py-3 rounded-xl border border-gray-700 w-full md:w-1/3 focus:outline-none focus:border-blue-500 transition"
+              />
+              
+              <select
+                value={filterDifficulty}
+                onChange={(e) => setFilterDifficulty(e.target.value)}
+                className="bg-gray-800 text-white px-4 py-3 rounded-xl border border-gray-700 w-full md:w-1/6 focus:outline-none focus:border-blue-500 transition"
+              >
+                <option value="">All Difficulties</option>
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+              </select>
+
+              <input
+                type="date"
+                value={filterDate}
+                onChange={(e) => setFilterDate(e.target.value)}
+                className="bg-gray-800 text-gray-400 px-4 py-3 rounded-xl border border-gray-700 w-full md:w-1/6 focus:outline-none focus:border-blue-500 transition"
+              />
+
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-gray-800 text-white px-4 py-3 rounded-xl border border-gray-700 w-full md:w-1/6 focus:outline-none focus:border-blue-500 transition"
+              >
+                <option value="newest">Sort: Newest</option>
+                <option value="oldest">Sort: Oldest</option>
+              </select>
+
+              <button 
+                onClick={() => {
+                  setSearchTerm("");
+                  setFilterDifficulty("");
+                  setFilterDate("");
+                  setSortBy("newest");
+                }}
+                className="text-gray-400 hover:text-white underline w-full md:w-auto md:ml-auto"
+              >
+                Clear
+              </button>
+            </div>
+          )}
+
           {history.length === 0 ? (
             <div className="text-center text-gray-500 py-20 font-bold text-xl">
               No interview history found. Go to the Dashboard to generate one!
             </div>
           ) : (
-            <InterviewHistory 
-              history={history} 
-              onDelete={deleteInterview} 
-              onDeleteAll={deleteAllInterviews} 
-            />
+            <>
+              {(() => {
+                const filteredHistory = history
+                  .filter(item => {
+                    const matchRole = item.role.toLowerCase().includes(searchTerm.toLowerCase());
+                    const matchDifficulty = filterDifficulty ? item.difficulty === filterDifficulty : true;
+                    const matchDate = filterDate ? new Date(item.createdAt).toISOString().split('T')[0] === filterDate : true;
+                    return matchRole && matchDifficulty && matchDate;
+                  })
+                  .sort((a, b) => {
+                    if (sortBy === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
+                    if (sortBy === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
+                    return 0;
+                  });
+
+                if (filteredHistory.length === 0) {
+                  return (
+                    <div className="text-center text-gray-500 py-20 font-bold text-xl">
+                      No matching history found for your search filters.
+                    </div>
+                  );
+                }
+
+                return (
+                  <InterviewHistory 
+                    history={filteredHistory} 
+                    onDelete={deleteInterview} 
+                    onDeleteAll={deleteAllInterviews} 
+                  />
+                );
+              })()}
+            </>
           )}
 
         </div>
