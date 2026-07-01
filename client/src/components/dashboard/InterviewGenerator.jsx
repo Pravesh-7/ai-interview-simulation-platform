@@ -42,7 +42,7 @@ export default function InterviewGenerator({ onGenerate, loading }) {
           type="number"
           min="1"
           max="50"
-          placeholder="Questions (1-50)"
+          placeholder="Number of questions you want to generate"
           value={questionCount}
           onChange={(e) => setQuestionCount(e.target.value)}
           className="p-4 rounded-xl bg-gray-800 border border-gray-700 outline-none focus:border-blue-500 text-white"
