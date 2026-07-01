@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+import toast from "react-hot-toast";
+
 export default function InterviewGenerator({ onGenerate, loading }) {
   const [role, setRole] = useState("");
   const [difficulty, setDifficulty] = useState("");
@@ -7,6 +9,10 @@ export default function InterviewGenerator({ onGenerate, loading }) {
   const [resume, setResume] = useState(null);
 
   const handleGenerate = () => {
+    if (!role || !difficulty) {
+      toast.error("Please enter a Role and Difficulty.");
+      return;
+    }
     onGenerate({ role, difficulty, questionCount, resume });
   };
 
@@ -56,7 +62,7 @@ export default function InterviewGenerator({ onGenerate, loading }) {
 
       <button
         onClick={handleGenerate}
-        disabled={loading || !role || !difficulty}
+        disabled={loading}
         className="mt-6 w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 transition py-4 rounded-xl font-bold text-lg shadow-lg"
       >
         {loading ? "Generating..." : "🚀 Generate Questions"}

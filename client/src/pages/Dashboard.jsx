@@ -189,6 +189,25 @@ function Dashboard() {
     }
   };
 
+  const startNewInterview = () => {
+    setQuestions("");
+    setAnswers("");
+    setFeedback(null);
+    setInterviewId(null);
+    setEvaluating(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const scrollToHistory = (e) => {
+    e.preventDefault();
+    document.getElementById('history-section')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const scrollToTop = (e) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="flex min-h-screen bg-black text-white">
       {/* SIDEBAR */}
@@ -199,10 +218,10 @@ function Dashboard() {
             <h1 className="text-2xl font-black tracking-tight text-white">Intervu<span className="text-blue-500">.ai</span></h1>
           </div>
           <nav className="space-y-4">
-            <a href="#" className="flex items-center gap-4 text-blue-400 bg-blue-500/10 px-4 py-3 rounded-xl font-bold transition">
+            <a href="#" onClick={scrollToTop} className="flex items-center gap-4 text-blue-400 bg-blue-500/10 px-4 py-3 rounded-xl font-bold transition">
               <FaHome /> Dashboard
             </a>
-            <a href="#" className="flex items-center gap-4 text-gray-400 hover:text-white hover:bg-gray-800 px-4 py-3 rounded-xl font-bold transition">
+            <a href="#" onClick={scrollToHistory} className="flex items-center gap-4 text-gray-400 hover:text-white hover:bg-gray-800 px-4 py-3 rounded-xl font-bold transition">
               <FaHistory /> History
             </a>
           </nav>
@@ -224,7 +243,7 @@ function Dashboard() {
               <h1 className="text-5xl font-black mb-2 text-white">Welcome back,</h1>
               <p className="text-gray-400 text-xl">Let's crush your next interview.</p>
             </div>
-            <button className="bg-blue-600 hover:bg-blue-500 transition px-8 py-3 rounded-full font-bold text-lg shadow-[0_0_20px_rgba(37,99,235,0.3)]">
+            <button onClick={startNewInterview} className="bg-blue-600 hover:bg-blue-500 transition px-8 py-3 rounded-full font-bold text-lg shadow-[0_0_20px_rgba(37,99,235,0.3)]">
               New Interview
             </button>
           </div>

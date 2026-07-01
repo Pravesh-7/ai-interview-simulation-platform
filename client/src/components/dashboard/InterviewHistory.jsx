@@ -4,7 +4,7 @@ export default function InterviewHistory({ history, onDelete, onDeleteAll }) {
   if (!history || history.length === 0) return null;
 
   return (
-    <>
+    <div id="history-section">
       <div className="mb-6 flex justify-between items-center mt-12">
         <h2 className="text-3xl font-bold">
           Interview History
@@ -65,6 +65,6 @@ export default function InterviewHistory({ history, onDelete, onDeleteAll }) {
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 }
