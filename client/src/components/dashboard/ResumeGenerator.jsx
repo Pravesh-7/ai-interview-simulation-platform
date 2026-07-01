@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 export default function ResumeGenerator({ onGenerate, loading }) {
   const [role, setRole] = useState("");
   const [difficulty, setDifficulty] = useState("");
-  const [questionCount, setQuestionCount] = useState("5");
+  const [questionCount, setQuestionCount] = useState("");
   const [resume, setResume] = useState(null);
   const [focusArea, setFocusArea] = useState("All");
 
