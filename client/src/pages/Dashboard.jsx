@@ -445,7 +445,7 @@ const stopSpeaking = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie data={roleData} cx="50%" cy="50%" innerRadius={25} outerRadius={40} paddingAngle={5} dataKey="value">
-                      {roleData.map((entry, index) => <Cell key={\`cell-\${index}\`} fill={COLORS[index % COLORS.length]} />)}
+                      {roleData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
                     </Pie>
                     <RechartsTooltip contentStyle={{backgroundColor: '#111827', borderColor: '#374151'}} />
                   </PieChart>
@@ -456,7 +456,7 @@ const stopSpeaking = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie data={diffData} cx="50%" cy="50%" innerRadius={25} outerRadius={40} paddingAngle={5} dataKey="value">
-                      {diffData.map((entry, index) => <Cell key={\`cell-\${index}\`} fill={COLORS[(index + 2) % COLORS.length]} />)}
+                      {diffData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[(index + 2) % COLORS.length]} />)}
                     </Pie>
                     <RechartsTooltip contentStyle={{backgroundColor: '#111827', borderColor: '#374151'}} />
                   </PieChart>
