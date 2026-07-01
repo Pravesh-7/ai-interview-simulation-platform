@@ -28,6 +28,7 @@ function Dashboard() {
   const [interviewId, setInterviewId] = useState(null);
   const [isSpeaking, setIsSpeaking] = useState(false);  
   const [evaluating, setEvaluating] = useState(false);
+  const [resume, setResume] = useState(null);
   const token = localStorage.getItem("token");
 
   // --- PERFORMANCE METRICS ---
@@ -172,19 +173,41 @@ function Dashboard() {
         id: "generate"
       });
 
-      const res = await axios.post(
-        "http://localhost:5000/api/ai/generate",
-        {
-          role,
-          difficulty,
-          questionCount
-        },
-        {
-          headers: {
-            authorization: token
+      let res;
+      
+      if (resume) {
+        toast.loading("Parsing Resume & Generating...", { id: "generate" });
+        const formData = new FormData();
+        formData.append("role", role);
+        formData.append("difficulty", difficulty);
+        formData.append("questionCount", questionCount);
+        formData.append("resume", resume);
+
+        res = await axios.post(
+          "http://localhost:5000/api/ai/generate-from-resume",
+          formData,
+          {
+            headers: {
+              authorization: token,
+              "Content-Type": "multipart/form-data"
+            }
           }
-        }
-      );
+        );
+      } else {
+        res = await axios.post(
+          "http://localhost:5000/api/ai/generate",
+          {
+            role,
+            difficulty,
+            questionCount
+          },
+          {
+            headers: {
+              authorization: token
+            }
+          }
+        );
+      }
 
       setQuestions(res.data.questions);
       setInterviewId(res.data.interviewId);
@@ -501,6 +524,16 @@ const stopSpeaking = () => {
               onChange={(e) => setQuestionCount(e.target.value)}
               className="p-4 rounded-xl bg-gray-800 border border-gray-700 outline-none focus:border-blue-500"
             />
+
+            <div className="flex items-center gap-4 p-4 rounded-xl bg-gray-800 border border-gray-700">
+              <label className="text-gray-400 font-bold w-1/3">📄 Resume (PDF)</label>
+              <input
+                type="file"
+                accept=".pdf"
+                onChange={(e) => setResume(e.target.files[0])}
+                className="w-2/3 text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600"
+              />
+            </div>
 
           </div>
 
