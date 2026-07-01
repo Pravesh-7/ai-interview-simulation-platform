@@ -25,6 +25,7 @@ An AI-powered interview preparation platform built with the **MERN Stack** and *
 - 🛡️ **Mock Data Failover** — Gracefully handles API/network failures by falling back to mock questions and feedback without hanging the UI
 - 🚀 **Production Ready** — Frontend is fully configured for zero-config deployment on Vercel with dynamic environment variable routing
 - ✨ **Polished UX/UI** — Updated meta tags, custom title, and clean error handling for a production-level feel
+- 🔍 **Search & Filter History** — Search your past interviews by role, filter by difficulty and date, and sort by newest or oldest
 - 📊 **Score & Feedback** — Provides a score and constructive feedback for each answer
 - ⏱️ **Timer System** — Real-time countdown clock based on difficulty with automatic evaluation upon timeout
 - 📈 **Performance Dashboard** — Visualizes total interviews, average scores, and activity trends using Recharts
