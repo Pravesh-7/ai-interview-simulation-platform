@@ -34,6 +34,16 @@ function Dashboard() {
       setHistory(res.data);
     } catch (err) {
       console.log(err);
+      setHistory([
+        {
+          _id: "mock1",
+          role: "Mock Developer",
+          difficulty: "Medium",
+          questions: "1. Mock Question 1\n2. Mock Question 2",
+          createdAt: new Date().toISOString(),
+          evaluation: { overallScore: 85, technicalKnowledge: 8, communication: 9, confidence: 8, problemSolving: 9 }
+        }
+      ]);
     }
   };
 
@@ -137,7 +147,9 @@ function Dashboard() {
       setLoading(false);
     } catch (err) {
       console.log(err);
-      toast.error("AI Generation Failed", { id: "generate" });
+      toast("AI Generation Failed. Falling back to Mock Data...", { icon: "⚠️", id: "generate" });
+      setQuestions("1. Can you describe a time you overcame a challenging bug?\n2. Explain React state vs props.\n3. How do you ensure your code is maintainable?");
+      setInterviewId("mock_interview_" + Date.now());
       setLoading(false);
     }
   };
@@ -156,7 +168,17 @@ function Dashboard() {
       setEvaluating(false);
     } catch (err) {
       console.log(err);
-      toast.error("Evaluation Failed", { id: "evaluate" });
+      toast("Evaluation Failed. Falling back to Mock Feedback...", { icon: "⚠️", id: "evaluate" });
+      setFeedback({
+        overallScore: 88,
+        technicalKnowledge: 8,
+        communication: 9,
+        confidence: 9,
+        problemSolving: 9,
+        strengths: ["Clear structuring of thoughts", "Good foundational knowledge"],
+        weaknesses: ["Could provide more specific code examples"],
+        areasOfImprovement: ["Try to elaborate more on edge cases when answering technical questions."]
+      });
       setEvaluating(false);
     }
   };

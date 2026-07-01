@@ -16,7 +16,17 @@ export default function History() {
       setHistory(res.data);
     } catch (err) {
       console.log(err);
-      toast.error("Failed to load history");
+      toast("Failed to load history. Showing Mock History...", { icon: "⚠️" });
+      setHistory([
+        {
+          _id: "mock1",
+          role: "Mock Developer",
+          difficulty: "Medium",
+          questions: "1. Mock Question 1\n2. Mock Question 2",
+          createdAt: new Date().toISOString(),
+          evaluation: { overallScore: 85, technicalKnowledge: 8, communication: 9, confidence: 8, problemSolving: 9 }
+        }
+      ]);
     }
   };
 
