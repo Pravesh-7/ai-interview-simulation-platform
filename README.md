@@ -14,6 +14,7 @@ An AI-powered interview preparation platform built with the **MERN Stack** and *
 
 - 🎯 **Role-Based Question Generation** — Generates tailored interview questions based on job role (e.g., SDE, Frontend Developer, Data Analyst)
 - 📄 **Resume-Based Generation** — Upload your PDF resume and have the AI generate highly personalized questions based on your actual experience
+- 🎥 **Live WebRTC Camera** — Simulates a real face-to-face video interview environment by mirroring a live camera feed while you answer questions
 - ⚙️ **Difficulty Levels** — Choose from Easy, Medium, or Hard to match your preparation stage
 - 🔢 **[NEW] Customizable Question Count** — Choose between 1 to 50 questions
 - 🧠 **Structured AI Scoring** — Provides a beautiful scorecard evaluating Technical Knowledge, Communication, Confidence, and Problem Solving with Strengths & Weaknesses
