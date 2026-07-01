@@ -8,9 +8,11 @@ export default function History() {
   const [history, setHistory] = useState([]);
   const token = localStorage.getItem("token");
 
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
   const fetchHistory = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/interview/history", {
+      const res = await axios.get(`${API_URL}/api/interview/history`, {
         headers: { authorization: token }
       });
       setHistory(res.data);
@@ -37,7 +39,7 @@ export default function History() {
   const deleteInterview = async (id) => {
     if (!window.confirm("Are you sure you want to delete this interview?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/interview/${id}`, { headers: { authorization: token } });
+      await axios.delete(`${API_URL}/api/interview/${id}`, { headers: { authorization: token } });
       toast.success("Interview deleted");
       fetchHistory();
     } catch (err) {
@@ -50,7 +52,7 @@ export default function History() {
     if (history.length === 0) return;
     if (!window.confirm("Are you sure you want to delete ALL interviews? This cannot be undone.")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/interview`, { headers: { authorization: token } });
+      await axios.delete(`${API_URL}/api/interview`, { headers: { authorization: token } });
       toast.success("All interviews deleted");
       setHistory([]);
     } catch (err) {

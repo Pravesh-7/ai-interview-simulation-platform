@@ -25,10 +25,11 @@ function Dashboard() {
   const [isSpeaking, setIsSpeaking] = useState(false);
 
   const token = localStorage.getItem("token");
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   const fetchHistory = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/interview/history", {
+      const res = await axios.get(`${API_URL}/api/interview/history`, {
         headers: { authorization: token }
       });
       setHistory(res.data);
@@ -123,12 +124,12 @@ function Dashboard() {
         formData.append("questionCount", questionCount);
         formData.append("resume", resume);
 
-        res = await axios.post("http://localhost:5000/api/ai/generate-from-resume", formData, {
+        res = await axios.post(`${API_URL}/api/ai/generate-from-resume`, formData, {
           headers: { authorization: token }
         });
       } else {
         toast.loading("Generating AI Questions...", { id: "generate" });
-        res = await axios.post("http://localhost:5000/api/ai/generate", {
+        res = await axios.post(`${API_URL}/api/ai/generate`, {
           role, difficulty, questionCount
         }, {
           headers: { authorization: token }
@@ -138,7 +139,7 @@ function Dashboard() {
       setQuestions(res.data.questions);
       setInterviewId(res.data.interviewId);
       
-      const historyRes = await axios.get("http://localhost:5000/api/interview/history", {
+      const historyRes = await axios.get(`${API_URL}/api/interview/history`, {
         headers: { authorization: token }
       });
       setHistory(historyRes.data);
@@ -159,7 +160,7 @@ function Dashboard() {
       setEvaluating(true);
       toast.loading("Evaluating Answers...", { id: "evaluate" });
 
-      const res = await axios.post("http://localhost:5000/api/evaluate", {
+      const res = await axios.post(`${API_URL}/api/evaluate`, {
         questions, answers, interviewId
       }, { headers: { authorization: token } });
 
