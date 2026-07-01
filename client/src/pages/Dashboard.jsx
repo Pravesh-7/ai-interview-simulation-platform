@@ -29,6 +29,8 @@ function Dashboard() {
   const [isSpeaking, setIsSpeaking] = useState(false);  
   const [evaluating, setEvaluating] = useState(false);
   const [resume, setResume] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(null);
+  const [isTimerActive, setIsTimerActive] = useState(false);
   const token = localStorage.getItem("token");
 
   // --- PERFORMANCE METRICS ---
@@ -166,6 +168,8 @@ function Dashboard() {
       setAnswers("");
       setFeedback(null);
       setInterviewId(null);
+      setTimeLeft(null);
+      setIsTimerActive(false);
 
       setLoading(true);
 
@@ -211,6 +215,15 @@ function Dashboard() {
 
       setQuestions(res.data.questions);
       setInterviewId(res.data.interviewId);
+
+      // Start timer based on difficulty
+      let minutes = 15; // default easy
+      const diffLower = difficulty.toLowerCase();
+      if (diffLower.includes("medium")) minutes = 30;
+      if (diffLower.includes("hard")) minutes = 45;
+      
+      setTimeLeft(minutes * 60);
+      setIsTimerActive(true);
 
       const historyRes = await axios.get(
         "http://localhost:5000/api/interview/history",
@@ -304,6 +317,7 @@ const stopSpeaking = () => {
 };
 
   const evaluateAnswers = async () => {
+    setIsTimerActive(false);
 
     try {
 
@@ -347,6 +361,27 @@ const stopSpeaking = () => {
 
     }
 
+  };
+
+  useEffect(() => {
+    let interval = null;
+    if (isTimerActive && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft(prev => prev - 1);
+      }, 1000);
+    } else if (isTimerActive && timeLeft === 0) {
+      toast("Time is up! Auto-submitting your answers...", { icon: '⏱️' });
+      setIsTimerActive(false);
+      evaluateAnswers();
+    }
+    return () => clearInterval(interval);
+  }, [isTimerActive, timeLeft]);
+
+  const formatTime = (seconds) => {
+    if (seconds === null) return "";
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
   };
 
   return (
@@ -567,9 +602,16 @@ const stopSpeaking = () => {
 
             <div className="bg-gray-900 border border-gray-800 p-8 rounded-3xl shadow-2xl mb-12">
 
-              <h2 className="text-3xl font-bold mb-6 text-blue-400">
-                Generated Questions
-              </h2>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-3xl font-bold text-blue-400">
+                  Generated Questions
+                </h2>
+                {isTimerActive && timeLeft !== null && (
+                  <div className={`px-6 py-2 rounded-xl font-bold text-2xl flex items-center gap-3 ${timeLeft < 300 ? 'bg-red-500/20 text-red-500 animate-pulse' : 'bg-gray-800 text-yellow-400'}`}>
+                    ⏱️ {formatTime(timeLeft)}
+                  </div>
+                )}
+              </div>
               <div className="flex gap-4 mb-6">
 
               <button
