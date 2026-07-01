@@ -15,7 +15,7 @@ An AI-powered interview preparation platform built with the **MERN Stack** and *
 - 🎯 **Role-Based Question Generation** — Generates tailored interview questions based on job role (e.g., SDE, Frontend Developer, Data Analyst)
 - ⚙️ **Difficulty Levels** — Choose from Easy, Medium, or Hard to match your preparation stage
 - 🔢 **[NEW] Customizable Question Count** — Choose between 1 to 50 questions
-- 🧠 **AI-Powered Answer Evaluation** — Evaluates responses using Google Gemini API with semantic understanding
+- 🧠 **Structured AI Scoring** — Provides a beautiful scorecard evaluating Technical Knowledge, Communication, Confidence, and Problem Solving with Strengths & Weaknesses
 - 🗣️ **Voice Features** — Speech-to-Text (Voice Answering) and Text-to-Speech (AI Reads Questions)
 - 📊 **Score & Feedback** — Provides a score and constructive feedback for each answer
 - 🔐 **User Authentication** — Secure login/signup with JWT-based auth

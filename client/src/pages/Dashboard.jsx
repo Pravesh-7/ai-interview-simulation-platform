@@ -20,7 +20,8 @@ function Dashboard() {
   const [answers, setAnswers] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [recognition, setRecognition] = useState(null);
-  const [feedback, setFeedback] = useState("");
+  const [feedback, setFeedback] = useState(null);
+  const [interviewId, setInterviewId] = useState(null);
   const [isSpeaking, setIsSpeaking] = useState(false);  
   const [evaluating, setEvaluating] = useState(false);
   const token = localStorage.getItem("token");
@@ -124,7 +125,8 @@ function Dashboard() {
 
       setQuestions("");
       setAnswers("");
-      setFeedback("");
+      setFeedback(null);
+      setInterviewId(null);
 
       setLoading(true);
 
@@ -147,6 +149,7 @@ function Dashboard() {
       );
 
       setQuestions(res.data.questions);
+      setInterviewId(res.data.interviewId);
 
       const historyRes = await axios.get(
         "http://localhost:5000/api/interview/history",
@@ -253,7 +256,13 @@ const stopSpeaking = () => {
         "http://localhost:5000/api/evaluate",
         {
           questions,
-          answers
+          answers,
+          interviewId
+        },
+        {
+          headers: {
+            authorization: token
+          }
         }
       );
 
@@ -555,17 +564,59 @@ const stopSpeaking = () => {
        }
          
      {
-        feedback && (
+        feedback && typeof feedback === "object" && (
 
           <div className="bg-gray-900 border border-gray-800 p-8 rounded-3xl shadow-2xl mb-10">
 
-            <h2 className="text-3xl font-bold text-yellow-400 mb-6">
-              AI Feedback
+            <h2 className="text-3xl font-bold text-yellow-400 mb-8 text-center border-b border-gray-800 pb-6">
+              AI Evaluation Scorecard
             </h2>
 
-            <pre className="whitespace-pre-wrap text-gray-200 leading-8">
-              {feedback}
-            </pre>
+            <div className="grid md:grid-cols-2 gap-8 mb-8">
+              <div className="flex flex-col items-center justify-center bg-gray-800 p-6 rounded-2xl">
+                <span className="text-gray-400 text-lg mb-2">Overall Score</span>
+                <span className="text-6xl font-black text-blue-500">{feedback.overallScore}<span className="text-3xl text-gray-500">/100</span></span>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gray-800 p-4 rounded-xl flex flex-col justify-center items-center">
+                  <span className="text-gray-400 text-sm">Technical</span>
+                  <span className="text-2xl font-bold text-green-400">{feedback.technicalKnowledge}/10</span>
+                </div>
+                <div className="bg-gray-800 p-4 rounded-xl flex flex-col justify-center items-center">
+                  <span className="text-gray-400 text-sm">Communication</span>
+                  <span className="text-2xl font-bold text-purple-400">{feedback.communication}/10</span>
+                </div>
+                <div className="bg-gray-800 p-4 rounded-xl flex flex-col justify-center items-center">
+                  <span className="text-gray-400 text-sm">Confidence</span>
+                  <span className="text-2xl font-bold text-yellow-400">{feedback.confidence}/10</span>
+                </div>
+                <div className="bg-gray-800 p-4 rounded-xl flex flex-col justify-center items-center">
+                  <span className="text-gray-400 text-sm">Problem Solving</span>
+                  <span className="text-2xl font-bold text-pink-400">{feedback.problemSolving}/10</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="bg-green-500/10 border border-green-500/20 p-5 rounded-2xl">
+                <h3 className="text-xl font-bold text-green-400 mb-3">💪 Strengths</h3>
+                <ul className="list-disc list-inside text-gray-300 space-y-2">
+                  {feedback.strengths?.map((s, i) => <li key={i}>{s}</li>)}
+                </ul>
+              </div>
+              <div className="bg-red-500/10 border border-red-500/20 p-5 rounded-2xl">
+                <h3 className="text-xl font-bold text-red-400 mb-3">⚠️ Weaknesses</h3>
+                <ul className="list-disc list-inside text-gray-300 space-y-2">
+                  {feedback.weaknesses?.map((w, i) => <li key={i}>{w}</li>)}
+                </ul>
+              </div>
+              <div className="bg-blue-500/10 border border-blue-500/20 p-5 rounded-2xl">
+                <h3 className="text-xl font-bold text-blue-400 mb-3">📈 Areas to Improve</h3>
+                <ul className="list-disc list-inside text-gray-300 space-y-2">
+                  {feedback.areasOfImprovement?.map((a, i) => <li key={i}>{a}</li>)}
+                </ul>
+              </div>
+            </div>
 
           </div>
 
@@ -620,6 +671,25 @@ const stopSpeaking = () => {
                   </button>
 
                 </div>
+
+                {item.evaluation && (
+                  <div className="mb-4 bg-gray-800 p-4 rounded-xl flex justify-between items-center">
+                    <div>
+                      <span className="text-gray-400 mr-2">Overall Score:</span>
+                      <span className="text-2xl font-bold text-blue-400">{item.evaluation.overallScore}/100</span>
+                    </div>
+                    <div className="flex gap-4">
+                      <div className="text-center">
+                        <div className="text-xs text-gray-500">Tech</div>
+                        <div className="font-bold text-green-400">{item.evaluation.technicalKnowledge}</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-xs text-gray-500">Comm</div>
+                        <div className="font-bold text-purple-400">{item.evaluation.communication}</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <pre className="whitespace-pre-wrap text-gray-300 leading-8">
                   {item.questions}

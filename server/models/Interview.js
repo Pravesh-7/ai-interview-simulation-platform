@@ -23,6 +23,11 @@ const interviewSchema = new mongoose.Schema({
     required: true
   },
 
+  evaluation: {
+    type: Object,
+    default: null
+  },
+
   createdAt: {
     type: Date,
     default: Date.now

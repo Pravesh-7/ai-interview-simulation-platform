@@ -51,7 +51,8 @@ router.post(
 
     // ✅ Send response
     res.json({
-      questions
+      questions,
+      interviewId: interview._id
     });
 
   } catch (err) {
