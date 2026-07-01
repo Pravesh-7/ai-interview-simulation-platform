@@ -1,6 +1,10 @@
 import toast from "react-hot-toast";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, Legend
+} from 'recharts';
 
 import {
   FaHome,
@@ -25,6 +29,40 @@ function Dashboard() {
   const [isSpeaking, setIsSpeaking] = useState(false);  
   const [evaluating, setEvaluating] = useState(false);
   const token = localStorage.getItem("token");
+
+  // --- PERFORMANCE METRICS ---
+  const evaluatedInterviews = history.filter(item => item.evaluation);
+  const totalInterviews = history.length;
+  
+  const averageScore = evaluatedInterviews.length > 0 
+    ? (evaluatedInterviews.reduce((acc, curr) => acc + curr.evaluation.overallScore, 0) / evaluatedInterviews.length).toFixed(1)
+    : 0;
+    
+  const highestScore = evaluatedInterviews.length > 0
+    ? Math.max(...evaluatedInterviews.map(item => item.evaluation.overallScore))
+    : 0;
+
+  const roleCounts = {};
+  history.forEach(item => {
+    roleCounts[item.role] = (roleCounts[item.role] || 0) + 1;
+  });
+  const roleData = Object.keys(roleCounts).map(key => ({ name: key, value: roleCounts[key] }));
+
+  const diffCounts = {};
+  history.forEach(item => {
+    diffCounts[item.difficulty] = (diffCounts[item.difficulty] || 0) + 1;
+  });
+  const diffData = Object.keys(diffCounts).map(key => ({ name: key, value: diffCounts[key] }));
+
+  const dateCounts = {};
+  history.forEach(item => {
+    const dateStr = new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    dateCounts[dateStr] = (dateCounts[dateStr] || 0) + 1;
+  });
+  const activityData = Object.keys(dateCounts).map(date => ({ date, count: dateCounts[date] })).reverse().slice(-7);
+
+  const COLORS = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899'];
+  // ---------------------------
 
   const fetchHistory = async () => {
     try {
@@ -357,46 +395,75 @@ const stopSpeaking = () => {
 
         </div>
 
-        {/* STATS */}
+        {/* PERFORMANCE DASHBOARD */}
 
-        <div className="grid md:grid-cols-3 gap-6 mb-10">
+        <div className="mb-10">
+          <h2 className="text-3xl font-bold mb-6">Performance Dashboard</h2>
 
-          <div className="bg-gray-900 border border-gray-800 p-8 rounded-3xl shadow-xl">
-
-            <h2 className="text-gray-400 text-lg">
-              Total Interviews
-            </h2>
-
-            <p className="text-5xl font-bold mt-3 text-blue-400">
-              {history.length}
-            </p>
-
+          <div className="grid md:grid-cols-4 gap-6 mb-6">
+            <div className="bg-gray-900 border border-gray-800 p-6 rounded-3xl shadow-xl flex flex-col justify-center items-center">
+              <h2 className="text-gray-400 text-sm uppercase tracking-wider font-bold mb-2">Total Interviews</h2>
+              <p className="text-5xl font-black text-blue-400">{totalInterviews}</p>
+            </div>
+            <div className="bg-gray-900 border border-gray-800 p-6 rounded-3xl shadow-xl flex flex-col justify-center items-center">
+              <h2 className="text-gray-400 text-sm uppercase tracking-wider font-bold mb-2">Average Score</h2>
+              <p className="text-5xl font-black text-green-400">{averageScore}</p>
+            </div>
+            <div className="bg-gray-900 border border-gray-800 p-6 rounded-3xl shadow-xl flex flex-col justify-center items-center">
+              <h2 className="text-gray-400 text-sm uppercase tracking-wider font-bold mb-2">Highest Score</h2>
+              <p className="text-5xl font-black text-yellow-400">{highestScore}</p>
+            </div>
+            <div className="bg-gray-900 border border-gray-800 p-6 rounded-3xl shadow-xl flex flex-col justify-center items-center">
+              <h2 className="text-gray-400 text-sm uppercase tracking-wider font-bold mb-2">Recent Interview</h2>
+              <p className="text-xl font-bold text-purple-400 text-center truncate w-full">
+                {history.length > 0 ? history[0].role : "None"}
+              </p>
+            </div>
           </div>
 
-          <div className="bg-gray-900 border border-gray-800 p-8 rounded-3xl shadow-xl">
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Weekly Activity Bar Chart */}
+            <div className="bg-gray-900 border border-gray-800 p-6 rounded-3xl shadow-xl col-span-2">
+              <h3 className="text-gray-400 text-sm uppercase tracking-wider font-bold mb-4">Weekly Activity</h3>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={activityData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <XAxis dataKey="date" stroke="#9CA3AF" />
+                    <YAxis stroke="#9CA3AF" allowDecimals={false} />
+                    <RechartsTooltip cursor={{fill: '#1f2937'}} contentStyle={{backgroundColor: '#111827', borderColor: '#374151'}} />
+                    <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
 
-            <h2 className="text-gray-400 text-lg">
-              AI Status
-            </h2>
-
-            <p className="text-3xl font-bold mt-3 text-green-400">
-              Active
-            </p>
-
+            {/* Role & Difficulty Distribution Pie Charts */}
+            <div className="bg-gray-900 border border-gray-800 p-6 rounded-3xl shadow-xl flex flex-col gap-6">
+              <div className="flex-1 h-32">
+                <h3 className="text-gray-400 text-xs uppercase tracking-wider font-bold mb-2 text-center">Role Distribution</h3>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={roleData} cx="50%" cy="50%" innerRadius={25} outerRadius={40} paddingAngle={5} dataKey="value">
+                      {roleData.map((entry, index) => <Cell key={\`cell-\${index}\`} fill={COLORS[index % COLORS.length]} />)}
+                    </Pie>
+                    <RechartsTooltip contentStyle={{backgroundColor: '#111827', borderColor: '#374151'}} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex-1 h-32">
+                <h3 className="text-gray-400 text-xs uppercase tracking-wider font-bold mb-2 text-center">Difficulty Distribution</h3>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={diffData} cx="50%" cy="50%" innerRadius={25} outerRadius={40} paddingAngle={5} dataKey="value">
+                      {diffData.map((entry, index) => <Cell key={\`cell-\${index}\`} fill={COLORS[(index + 2) % COLORS.length]} />)}
+                    </Pie>
+                    <RechartsTooltip contentStyle={{backgroundColor: '#111827', borderColor: '#374151'}} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </div>
-
-          <div className="bg-gray-900 border border-gray-800 p-8 rounded-3xl shadow-xl">
-
-            <h2 className="text-gray-400 text-lg">
-              Platform
-            </h2>
-
-            <p className="text-3xl font-bold mt-3 text-purple-400">
-              MERN + AI
-            </p>
-
-          </div>
-
         </div>
 
         {/* FORM */}

@@ -18,6 +18,7 @@ An AI-powered interview preparation platform built with the **MERN Stack** and *
 - 🧠 **Structured AI Scoring** — Provides a beautiful scorecard evaluating Technical Knowledge, Communication, Confidence, and Problem Solving with Strengths & Weaknesses
 - 🗣️ **Voice Features** — Speech-to-Text (Voice Answering) and Text-to-Speech (AI Reads Questions)
 - 📊 **Score & Feedback** — Provides a score and constructive feedback for each answer
+- 📈 **Performance Dashboard** — Visualizes total interviews, average scores, and activity trends using Recharts
 - 🔐 **User Authentication** — Secure login/signup with JWT-based auth
 - 📁 **Interview History & Management** — Review past interview sessions, track improvement, and delete individual or all sessions
 - 🔔 **Responsive UI** — Beautifully designed UI with Toast Notifications
