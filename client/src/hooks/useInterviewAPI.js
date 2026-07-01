@@ -30,7 +30,7 @@ export function useInterviewAPI(token) {
     }
   };
 
-  const generateQuestions = async (role, difficulty, questionCount, resume, callbacks) => {
+  const generateQuestions = async (role, difficulty, questionCount, resume, focusArea, callbacks) => {
     const { onSuccess } = callbacks;
     try {
       setLoading(true);
@@ -42,6 +42,7 @@ export function useInterviewAPI(token) {
         formData.append("difficulty", difficulty);
         formData.append("questionCount", questionCount);
         formData.append("resume", resume);
+        if (focusArea) formData.append("focusArea", focusArea);
 
         res = await axios.post(`${API_URL}/api/ai/generate-from-resume`, formData, {
           headers: { authorization: token }

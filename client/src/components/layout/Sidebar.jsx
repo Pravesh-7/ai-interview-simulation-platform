@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FaRobot, FaHome, FaHistory, FaSignOutAlt } from "react-icons/fa";
+import { FaRobot, FaHome, FaHistory, FaSignOutAlt, FaBriefcase } from "react-icons/fa";
 
 export default function Sidebar() {
   const location = useLocation();
@@ -31,7 +31,17 @@ export default function Sidebar() {
                 : "text-gray-400 hover:text-white hover:bg-gray-800"
             }`}
           >
-            <FaHome /> Dashboard
+            <FaHome /> Role Based
+          </Link>
+          <Link
+            to="/resume-prep"
+            className={`flex items-center gap-4 px-4 py-3 rounded-xl font-bold transition ${
+              isActive("/resume-prep")
+                ? "text-blue-400 bg-blue-500/10"
+                : "text-gray-400 hover:text-white hover:bg-gray-800"
+            }`}
+          >
+            <FaBriefcase /> Resume Prep
           </Link>
           <Link
             to="/history"

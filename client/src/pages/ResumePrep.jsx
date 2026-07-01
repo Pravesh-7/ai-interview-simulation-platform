@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 // Components
 import Sidebar from "../components/layout/Sidebar";
-import PerformanceCharts from "../components/dashboard/PerformanceCharts";
-import InterviewGenerator from "../components/dashboard/InterviewGenerator";
+import ResumeGenerator from "../components/dashboard/ResumeGenerator";
 import ActiveInterview from "../components/dashboard/ActiveInterview";
 import FeedbackScorecard from "../components/dashboard/FeedbackScorecard";
 
@@ -10,13 +9,13 @@ import FeedbackScorecard from "../components/dashboard/FeedbackScorecard";
 import { useSpeech } from "../hooks/useSpeech";
 import { useInterviewAPI } from "../hooks/useInterviewAPI";
 
-function Dashboard() {
+function ResumePrep() {
   const token = localStorage.getItem("token");
   
   // API State & Handlers
   const { 
-    history, loading, evaluating, 
-    fetchHistory, generateQuestions, evaluateAnswers 
+    loading, evaluating, 
+    generateQuestions, evaluateAnswers 
   } = useInterviewAPI(token);
 
   // Local Interview State
@@ -31,20 +30,15 @@ function Dashboard() {
     isRecording, isSpeaking, startRecording, stopRecording, speakQuestions, stopSpeaking 
   } = useSpeech(setAnswers);
 
-  useEffect(() => {
-    fetchHistory();
-    // eslint-disable-next-line
-  }, []);
-
   const handleGenerate = (params) => {
-    const { role, difficulty, questionCount, resume } = params;
+    const { role, difficulty, questionCount, resume, focusArea } = params;
     setQuestions("");
     setAnswers("");
     setFeedback(null);
     setInterviewId(null);
     setActiveDifficulty(difficulty);
     
-    generateQuestions(role, difficulty, questionCount, resume, null, {
+    generateQuestions(role, difficulty, questionCount, resume, focusArea, {
       onSuccess: (generatedQuestions, id) => {
         setQuestions(generatedQuestions);
         setInterviewId(id);
@@ -74,17 +68,15 @@ function Dashboard() {
           {/* HEADER */}
           <div className="flex justify-between items-end mb-12 border-b border-gray-800 pb-8">
             <div>
-              <h1 className="text-5xl font-black mb-2 text-white">Welcome back,</h1>
-              <p className="text-gray-400 text-xl">Let's crush your next interview.</p>
+              <h1 className="text-5xl font-black mb-2 text-white">Resume Prep</h1>
+              <p className="text-gray-400 text-xl">Generate hyper-personalized questions from your CV.</p>
             </div>
-            <button onClick={startNewInterview} className="bg-blue-600 hover:bg-blue-500 transition px-8 py-3 rounded-full font-bold text-lg shadow-[0_0_20px_rgba(37,99,235,0.3)]">
+            <button onClick={startNewInterview} className="bg-purple-600 hover:bg-purple-500 transition px-8 py-3 rounded-full font-bold text-lg shadow-[0_0_20px_rgba(147,51,234,0.3)]">
               New Interview
             </button>
           </div>
-
-          <PerformanceCharts history={history} />
           
-          <InterviewGenerator onGenerate={handleGenerate} loading={loading} />
+          <ResumeGenerator onGenerate={handleGenerate} loading={loading} />
 
           <ActiveInterview
             questions={questions}
@@ -110,4 +102,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default ResumePrep;

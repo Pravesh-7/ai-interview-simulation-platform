@@ -79,7 +79,7 @@ router.post(
   upload.single("resume"),
   async (req, res) => {
     try {
-      const { role, difficulty, questionCount = 5 } = req.body;
+      const { role, difficulty, questionCount = 5, focusArea } = req.body;
 
       if (!req.file) {
         return res.status(400).json({ message: "No resume uploaded" });
@@ -100,6 +100,8 @@ router.post(
             
             Base the questions strictly on the following candidate's resume:
             ${resumeText}
+
+            ${focusArea && focusArea !== "All" ? `CRITICAL INSTRUCTION: Focus your questions specifically on the candidate's ${focusArea}. Do not ask generic questions outside this focus area.` : ""}
 
             Only return questions.
 `

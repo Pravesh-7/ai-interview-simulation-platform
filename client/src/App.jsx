@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import ResumePrep from "./pages/ResumePrep";
 import Landing from "./pages/Landing";
 import History from "./pages/History";
 
@@ -26,6 +27,13 @@ function App() {
           path="/dashboard"
           element={
             token ? <Dashboard /> : <Navigate to="/login" />
+          }
+        />
+
+        <Route
+          path="/resume-prep"
+          element={
+            token ? <ResumePrep /> : <Navigate to="/login" />
           }
         />
 
