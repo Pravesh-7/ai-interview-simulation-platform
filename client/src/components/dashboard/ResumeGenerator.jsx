@@ -50,7 +50,7 @@ export default function ResumeGenerator({ onGenerate, loading }) {
           type="number"
           min="1"
           max="50"
-          placeholder="Number of questions you want to generate"
+          placeholder="Number of questions you want to prepare"
           value={questionCount}
           onChange={(e) => setQuestionCount(e.target.value)}
           className="p-4 rounded-xl bg-gray-800 border border-gray-700 outline-none focus:border-purple-500 text-white"
