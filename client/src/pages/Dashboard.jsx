@@ -192,8 +192,7 @@ function Dashboard() {
           formData,
           {
             headers: {
-              authorization: token,
-              "Content-Type": "multipart/form-data"
+              authorization: token
             }
           }
         );
