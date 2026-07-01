@@ -125,6 +125,7 @@ router.post(
 
     } catch (err) {
       console.log("FULL ERROR:", err);
+      fs.writeFileSync("error.log", err.stack || String(err));
       res.status(500).json({
         message: "AI Generation from Resume Failed"
       });
