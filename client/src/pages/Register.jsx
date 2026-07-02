@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 
 function Register() {
 
+const [name, setName] = useState("");
 const [email, setEmail] = useState("");
 const [password, setPassword] = useState("");
 
@@ -18,6 +19,7 @@ try {
     await axios.post(
       `${API_URL}/api/auth/register`,
     {
+      name,
       email,
       password,
     }
@@ -52,6 +54,14 @@ return (
     <p className="text-gray-400 text-center mb-8">
       Join the AI Interview Platform
     </p>
+
+    <input
+      type="text"
+      placeholder="Enter Name"
+      value={name}
+      onChange={(e) => setName(e.target.value)}
+      className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 outline-none focus:border-blue-500 mb-5"
+    />
 
     <input
       type="email"
