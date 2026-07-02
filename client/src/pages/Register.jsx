@@ -2,12 +2,15 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 function Register() {
 
-const [name, setName] = useState("");
+const [firstName, setFirstName] = useState("");
+const [lastName, setLastName] = useState("");
 const [email, setEmail] = useState("");
 const [password, setPassword] = useState("");
+const [showPassword, setShowPassword] = useState(false);
 
 const navigate = useNavigate();
 
@@ -19,7 +22,7 @@ try {
     await axios.post(
       `${API_URL}/api/auth/register`,
     {
-      name,
+      name: `${firstName} ${lastName}`.trim(),
       email,
       password,
     }
@@ -55,13 +58,22 @@ return (
       Join the AI Interview Platform
     </p>
 
-    <input
-      type="text"
-      placeholder="Enter Name"
-      value={name}
-      onChange={(e) => setName(e.target.value)}
-      className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 outline-none focus:border-blue-500 mb-5"
-    />
+    <div className="flex gap-4 mb-5">
+      <input
+        type="text"
+        placeholder="First Name"
+        value={firstName}
+        onChange={(e) => setFirstName(e.target.value)}
+        className="w-1/2 p-4 rounded-xl bg-gray-800 border border-gray-700 outline-none focus:border-blue-500"
+      />
+      <input
+        type="text"
+        placeholder="Last Name"
+        value={lastName}
+        onChange={(e) => setLastName(e.target.value)}
+        className="w-1/2 p-4 rounded-xl bg-gray-800 border border-gray-700 outline-none focus:border-blue-500"
+      />
+    </div>
 
     <input
       type="email"
@@ -71,13 +83,22 @@ return (
       className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 outline-none focus:border-blue-500 mb-5"
     />
 
-    <input
-      type="password"
-      placeholder="Enter Password"
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 outline-none focus:border-blue-500 mb-6"
-    />
+    <div className="relative mb-6">
+      <input
+        type={showPassword ? "text" : "password"}
+        placeholder="Enter Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 outline-none focus:border-blue-500 pr-12"
+      />
+      <button
+        type="button"
+        onClick={() => setShowPassword(!showPassword)}
+        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200"
+      >
+        {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+      </button>
+    </div>
 
     <button
       onClick={handleRegister}

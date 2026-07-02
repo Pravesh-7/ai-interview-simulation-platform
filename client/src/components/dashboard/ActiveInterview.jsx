@@ -18,7 +18,7 @@ export default function ActiveInterview({
   speakQuestions,
   stopSpeaking
 }) {
-  const [useVideo, setUseVideo] = useState(true);
+  const [answerMode, setAnswerMode] = useState("video"); // 'text', 'audio', 'video'
 
   if (!questions) return null;
 
@@ -57,33 +57,43 @@ export default function ActiveInterview({
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
           <h2 className="text-3xl font-bold text-green-400">Your Answers</h2>
           
-          <div className="flex items-center gap-2 bg-gray-800 p-2 rounded-xl">
+          <div className="flex items-center gap-2 bg-gray-800 p-2 rounded-xl flex-wrap">
             <button 
-              onClick={() => setUseVideo(true)}
-              className={`px-4 py-2 rounded-lg font-bold transition flex items-center gap-2 ${useVideo ? "bg-blue-600 text-white shadow-lg" : "text-gray-400 hover:text-white"}`}
+              onClick={() => setAnswerMode("text")}
+              className={`px-4 py-2 rounded-lg font-bold transition flex items-center gap-2 ${answerMode === "text" ? "bg-blue-600 text-white shadow-lg" : "text-gray-400 hover:text-white"}`}
             >
-              🎥 Video Mode
+              ✍️ Text Only
             </button>
             <button 
-              onClick={() => setUseVideo(false)}
-              className={`px-4 py-2 rounded-lg font-bold transition flex items-center gap-2 ${!useVideo ? "bg-blue-600 text-white shadow-lg" : "text-gray-400 hover:text-white"}`}
+              onClick={() => setAnswerMode("audio")}
+              className={`px-4 py-2 rounded-lg font-bold transition flex items-center gap-2 ${answerMode === "audio" ? "bg-blue-600 text-white shadow-lg" : "text-gray-400 hover:text-white"}`}
             >
-              🎙️ Audio Only
+              🎙️ Audio Mode
+            </button>
+            <button 
+              onClick={() => setAnswerMode("video")}
+              className={`px-4 py-2 rounded-lg font-bold transition flex items-center gap-2 ${answerMode === "video" ? "bg-blue-600 text-white shadow-lg" : "text-gray-400 hover:text-white"}`}
+            >
+              🎥 Video Interview
             </button>
           </div>
         </div>
         
-        {!evaluating && !feedback && useVideo && <WebcamSimulation isRecording={isRecording} />}
+        {!evaluating && !feedback && answerMode === "video" && <WebcamSimulation isRecording={isRecording} />}
 
-        <div className="flex justify-center gap-4 mb-6">
-          <button onClick={startRecording} className="bg-blue-500 hover:bg-blue-600 px-6 py-3 rounded-xl font-bold">
-            🎤 Start Recording
-          </button>
-          <button onClick={stopRecording} className="bg-red-500 hover:bg-red-600 px-6 py-3 rounded-xl font-bold">
-            🛑 Stop Recording
-          </button>
-          {isRecording && <p className="text-red-400 font-bold mb-4 animate-pulse">🎙 Listening...</p>}
-        </div>
+        {answerMode !== "text" && (
+          <div className="flex flex-col items-center gap-4 mb-6">
+            <div className="flex gap-4">
+              <button onClick={startRecording} className="bg-blue-500 hover:bg-blue-600 px-6 py-3 rounded-xl font-bold flex items-center gap-2">
+                🎤 Start Recording
+              </button>
+              <button onClick={stopRecording} className="bg-red-500 hover:bg-red-600 px-6 py-3 rounded-xl font-bold flex items-center gap-2">
+                🛑 Stop Recording
+              </button>
+            </div>
+            {isRecording && <p className="text-red-400 font-bold animate-pulse mt-2">🎙 Listening...</p>}
+          </div>
+        )}
 
         <textarea
           rows="12"
