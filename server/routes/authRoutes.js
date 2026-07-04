@@ -15,6 +15,14 @@ router.post("/register", async (req, res) => {
 
         const { name, email, password } = req.body;
 
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: "Please provide all required fields: name, email, and password." });
+        }
+
+        if (password.length < 6) {
+            return res.status(400).json({ message: "Password must be at least 6 characters long." });
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = await User.create({
@@ -23,9 +31,12 @@ router.post("/register", async (req, res) => {
             password: hashedPassword
         });
 
+        const userResponse = user.toObject();
+        delete userResponse.password;
+
         res.json({
             message: "User Registered",
-            user
+            user: userResponse
         });
 
     } catch (err) {

@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const rateLimit = require("express-rate-limit");
 
 const authRoutes = require("./routes/authRoutes");
 const aiRoutes = require("./routes/aiRoutes");
@@ -13,10 +14,16 @@ const authMiddleware = require("./middleware/authMiddleware");
 
 const app = express();
 
-app.use(cors());
+app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:5173" }));
 app.use(express.json());
 
-app.use("/api/auth", authRoutes);
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // Limit each IP to 20 requests per `window`
+  message: "Too many requests from this IP, please try again after 15 minutes",
+});
+
+app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/interview", interviewRoutes);
 app.use("/api/evaluate", evaluateRoutes);
@@ -42,6 +49,18 @@ app.get("/api/protected", authMiddleware, (req, res) => {
 
 });
 
-app.listen(5000, () => {
-    console.log("Server Started");
+// Global 404 Handler
+app.use((req, res, next) => {
+    res.status(404).json({ message: "Route not found" });
+});
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+    console.error("Unhandled Error:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+});
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`Server Started on port ${PORT}`);
 });

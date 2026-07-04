@@ -1,69 +1,24 @@
-import { useState, useEffect } from "react";
-// Components
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/layout/Sidebar";
 import PerformanceCharts from "../components/dashboard/PerformanceCharts";
-import InterviewGenerator from "../components/dashboard/InterviewGenerator";
-import ActiveInterview from "../components/dashboard/ActiveInterview";
-import FeedbackScorecard from "../components/dashboard/FeedbackScorecard";
-
-// Hooks
-import { useSpeech } from "../hooks/useSpeech";
 import { useInterviewAPI } from "../hooks/useInterviewAPI";
 
 function Dashboard() {
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
   
-  // API State & Handlers
   const { 
-    history, loading, evaluating, 
-    fetchHistory, generateQuestions, evaluateAnswers 
+    history, fetchHistory 
   } = useInterviewAPI(token);
-
-  // Local Interview State
-  const [questions, setQuestions] = useState("");
-  const [answers, setAnswers] = useState("");
-  const [feedback, setFeedback] = useState(null);
-  const [interviewId, setInterviewId] = useState(null);
-  const [activeDifficulty, setActiveDifficulty] = useState("");
-
-  // Speech Hooks
-  const { 
-    isRecording, isSpeaking, startRecording, stopRecording, speakQuestions, stopSpeaking 
-  } = useSpeech(setAnswers);
 
   useEffect(() => {
     fetchHistory();
     // eslint-disable-next-line
   }, []);
 
-  const handleGenerate = (params) => {
-    const { role, difficulty, questionCount, resume } = params;
-    setQuestions("");
-    setAnswers("");
-    setFeedback(null);
-    setInterviewId(null);
-    setActiveDifficulty(difficulty);
-    
-    generateQuestions(role, difficulty, questionCount, resume, null, {
-      onSuccess: (generatedQuestions, id) => {
-        setQuestions(generatedQuestions);
-        setInterviewId(id);
-      }
-    });
-  };
-
-  const handleEvaluate = () => {
-    evaluateAnswers(questions, answers, interviewId, {
-      onSuccess: (fb) => setFeedback(fb)
-    });
-  };
-
   const startNewInterview = () => {
-    setQuestions("");
-    setAnswers("");
-    setFeedback(null);
-    setInterviewId(null);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigate('/role-prep');
   };
 
   return (
@@ -84,26 +39,6 @@ function Dashboard() {
 
           <PerformanceCharts history={history} />
           
-          <InterviewGenerator onGenerate={handleGenerate} loading={loading} />
-
-          <ActiveInterview
-            questions={questions}
-            answers={answers}
-            setAnswers={setAnswers}
-            evaluating={evaluating}
-            feedback={feedback}
-            activeDifficulty={activeDifficulty}
-            evaluateAnswers={handleEvaluate}
-            isRecording={isRecording}
-            isSpeaking={isSpeaking}
-            startRecording={startRecording}
-            stopRecording={stopRecording}
-            speakQuestions={speakQuestions}
-            stopSpeaking={stopSpeaking}
-          />
-
-          <FeedbackScorecard feedback={feedback} />
-
         </div>
       </div>
     </div>

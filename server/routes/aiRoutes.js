@@ -8,7 +8,17 @@ const multer = require("multer");
 const fs = require("fs");
 const pdfParse = require("pdf-parse");
 
-const upload = multer({ dest: "uploads/" });
+const upload = multer({
+  dest: "uploads/",
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === "application/pdf") {
+      cb(null, true);
+    } else {
+      cb(new Error("Only PDFs are allowed"), false);
+    }
+  }
+});
 
 const client = new OpenAI({
   baseURL: "https://router.huggingface.co/v1",
@@ -120,6 +130,10 @@ router.post(
 
       await interview.save();
 
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+
       res.json({
         questions,
         interviewId: interview._id
@@ -128,6 +142,11 @@ router.post(
     } catch (err) {
       console.log("FULL ERROR:", err);
       fs.writeFileSync("error.log", err.stack || String(err));
+      
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+
       res.status(500).json({
         message: "AI Generation from Resume Failed"
       });

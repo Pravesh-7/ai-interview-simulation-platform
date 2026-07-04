@@ -1,7 +1,7 @@
 # 🤖 AI Interview Simulation Platform
 
 ## 📖 Project Overview
-An AI-powered interview preparation platform built with the **MERN Stack** and **Google Gemini API**. It dynamically generates role-specific interview questions, evaluates candidate answers using AI, and provides scores with detailed feedback — simulating a real interview experience.
+An AI-powered interview preparation platform built with the **MERN Stack** and **HuggingFace / DeepSeek AI API**. It dynamically generates role-specific interview questions, evaluates candidate answers using AI, and provides scores with detailed feedback — simulating a real interview experience.
 
 ---
 
@@ -38,7 +38,7 @@ An AI-powered interview preparation platform built with the **MERN Stack** and *
 - **Frontend**: React (Vite), Tailwind CSS, React Router, Axios, React Hot Toast, React Icons, Framer Motion, Recharts
 - **Backend**: Node.js, Express.js, Multer, pdf-parse
 - **Database**: MongoDB (Mongoose)
-- **AI Engine**: Google Gemini API / HuggingFace compatible APIs
+- **AI Engine**: HuggingFace API (DeepSeek-V3-0324)
 - **Auth**: JWT (JSON Web Tokens)
 - **Deployment**: Vercel (client), Render (server)
 
@@ -47,7 +47,7 @@ An AI-powered interview preparation platform built with the **MERN Stack** and *
 ## 🏗️ Architecture
 The platform is built on the **MERN** stack (MongoDB, Express, React, Node).
 - The **Frontend** uses a highly modular architecture where massive stateful components are decomposed into pure presentation components (e.g., `ActiveInterview`, `FeedbackScorecard`). Complex side-effects are decoupled using custom React hooks (`useInterviewAPI`, `useSpeech`).
-- The **Backend** serves as a secure proxy to the Google Gemini AI, parsing PDF resumes in memory using `multer` and `pdf-parse`, and storing evaluation metrics in MongoDB. 
+- The **Backend** serves as a secure proxy to the HuggingFace API (DeepSeek), parsing PDF resumes in memory using `multer` and `pdf-parse`, and storing evaluation metrics in MongoDB. 
 - Graceful degradation is built into the architecture using **Mock Data Failover** mechanisms ensuring the UI never hangs if the AI provider times out.
 
 ---
@@ -79,7 +79,7 @@ ai-interview-simulation-platform/
 ### Prerequisites
 - Node.js v18+
 - MongoDB (local or Atlas)
-- Google Gemini API key / HF Token
+- HuggingFace API Token (HF_TOKEN)
 
 ### 1. Clone the repository
 ```bash
@@ -109,8 +109,7 @@ Create a `.env` file in the `/server` directory:
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
-GEMINI_API_KEY=your_google_gemini_api_key
-# Alternatively: HF_TOKEN=your_huggingface_api_token
+HF_TOKEN=your_huggingface_api_token
 ```
 
 Create a `.env` file in the `/client` directory (optional for local dev, required for production):
@@ -194,7 +193,7 @@ This project is configured for **Vercel** (Frontend) and **Render** (Backend).
 
 ### Backend Deployment (Render/Heroku)
 1. Deploy the `/server` folder to your provider of choice.
-2. Add all environment variables from `.env.example` (`MONGO_URI`, `JWT_SECRET`, `GEMINI_API_KEY`).
+2. Add all environment variables from `.env.example` (`MONGO_URI`, `JWT_SECRET`, `HF_TOKEN`).
 
 ---
 

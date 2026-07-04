@@ -6,6 +6,8 @@ import Dashboard from "./pages/Dashboard";
 import ResumePrep from "./pages/ResumePrep";
 import Landing from "./pages/Landing";
 import History from "./pages/History";
+import InterviewPage from "./pages/InterviewPage";
+import RolePrep from "./pages/RolePrep";
 
 function App() {
 
@@ -38,9 +40,23 @@ function App() {
         />
 
         <Route
+          path="/role-prep"
+          element={
+            token ? <RolePrep /> : <Navigate to="/login" />
+          }
+        />
+
+        <Route
           path="/history"
           element={
             token ? <History /> : <Navigate to="/login" />
+          }
+        />
+
+        <Route
+          path="/interview"
+          element={
+            token ? <InterviewPage /> : <Navigate to="/login" />
           }
         />
 

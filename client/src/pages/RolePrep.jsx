@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/layout/Sidebar";
-import ResumeGenerator from "../components/dashboard/ResumeGenerator";
+import InterviewGenerator from "../components/dashboard/InterviewGenerator";
 import { useInterviewAPI } from "../hooks/useInterviewAPI";
 
-function ResumePrep() {
+function RolePrep() {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   
@@ -12,9 +12,9 @@ function ResumePrep() {
   } = useInterviewAPI(token);
 
   const handleGenerate = (params) => {
-    const { role, difficulty, questionCount, resume, focusArea } = params;
+    const { role, difficulty, questionCount, resume } = params;
     
-    generateQuestions(role, difficulty, questionCount, resume, focusArea, {
+    generateQuestions(role, difficulty, questionCount, resume, null, {
       onSuccess: (generatedQuestions, id) => {
         navigate('/interview', {
           state: {
@@ -27,12 +27,6 @@ function ResumePrep() {
     });
   };
 
-  const startNewInterview = () => {
-    setTimeout(() => {
-      document.getElementById('setup-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
-  };
-
   return (
     <div className="flex min-h-screen bg-black text-white">
       <Sidebar />
@@ -41,16 +35,19 @@ function ResumePrep() {
           {/* HEADER */}
           <div className="flex justify-between items-end mb-12 border-b border-gray-800 pb-8">
             <div>
-              <h1 className="text-5xl font-black mb-2 text-white">Resume Prep</h1>
-              <p className="text-gray-400 text-xl">Generate hyper-personalized questions from your CV.</p>
+              <h1 className="text-5xl font-black mb-2 text-white">Role Based Setup</h1>
+              <p className="text-gray-400 text-xl">Configure your mock interview parameters.</p>
             </div>
-            <button onClick={startNewInterview} className="bg-purple-600 hover:bg-purple-500 transition px-8 py-3 rounded-full font-bold text-lg shadow-[0_0_20px_rgba(147,51,234,0.3)]">
-              New Interview
+            <button 
+              onClick={() => navigate('/dashboard')} 
+              className="bg-gray-800 hover:bg-gray-700 transition px-8 py-3 rounded-full font-bold text-lg text-white shadow-lg"
+            >
+              Back to Dashboard
             </button>
           </div>
           
           <div id="setup-section" className="scroll-mt-8">
-            <ResumeGenerator onGenerate={handleGenerate} loading={loading} />
+            <InterviewGenerator onGenerate={handleGenerate} loading={loading} />
           </div>
 
         </div>
@@ -59,4 +56,4 @@ function ResumePrep() {
   );
 }
 
-export default ResumePrep;
+export default RolePrep;
