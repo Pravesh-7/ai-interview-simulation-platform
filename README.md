@@ -209,7 +209,7 @@ This project is configured for **Vercel** (Frontend) and **Render** (Backend).
 
 ## ⚠️ Known Limitations
 - The accuracy of Speech-to-Text (`webkitSpeechRecognition`) relies entirely on native browser APIs (best on Chrome).
-- AI generation speed is dependent on the external Gemini API latency.
+- AI generation speed is dependent on the external HuggingFace/DeepSeek API latency.
 - Piston code execution currently limits heavy library imports (standard libraries only).
 
 ---
