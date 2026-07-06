@@ -9,9 +9,12 @@ import History from "./pages/History";
 import InterviewPage from "./pages/InterviewPage";
 import RolePrep from "./pages/RolePrep";
 
-function App() {
-
+const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
+  return token ? children : <Navigate to="/login" />;
+};
+
+function App() {
 
   return (
 
@@ -28,35 +31,35 @@ function App() {
         <Route
           path="/dashboard"
           element={
-            token ? <Dashboard /> : <Navigate to="/login" />
+            <ProtectedRoute><Dashboard /></ProtectedRoute>
           }
         />
 
         <Route
           path="/resume-prep"
           element={
-            token ? <ResumePrep /> : <Navigate to="/login" />
+            <ProtectedRoute><ResumePrep /></ProtectedRoute>
           }
         />
 
         <Route
           path="/role-prep"
           element={
-            token ? <RolePrep /> : <Navigate to="/login" />
+            <ProtectedRoute><RolePrep /></ProtectedRoute>
           }
         />
 
         <Route
           path="/history"
           element={
-            token ? <History /> : <Navigate to="/login" />
+            <ProtectedRoute><History /></ProtectedRoute>
           }
         />
 
         <Route
           path="/interview"
           element={
-            token ? <InterviewPage /> : <Navigate to="/login" />
+            <ProtectedRoute><InterviewPage /></ProtectedRoute>
           }
         />
 

@@ -30,13 +30,10 @@ function Login() {
       navigate("/dashboard");
 
     } catch (err) {
-
       console.log(err);
-
-      toast.error("Invalid Credentials");
-
+      const errorMessage = err.response?.data?.message || "Invalid Credentials";
+      toast.error(errorMessage);
     }
-
   };
 
   return (

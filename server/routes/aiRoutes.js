@@ -8,8 +8,11 @@ const multer = require("multer");
 const fs = require("fs");
 const pdfParse = require("pdf-parse");
 
+const os = require("os");
+const path = require("path");
+
 const upload = multer({
-  dest: "uploads/",
+  dest: os.tmpdir(),
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     if (file.mimetype === "application/pdf") {
