@@ -37,7 +37,12 @@ export function useSpeech(setAnswers) {
       setIsRecording(true);
     } catch (e) {
       console.log(e);
-      alert("Microphone permission denied or error starting recording.");
+      if (e.name === 'InvalidStateError') {
+        // Recognition is already running
+        setIsRecording(true);
+      } else {
+        alert(`Error starting recording: ${e.message || e.name}. Please ensure your browser has microphone permissions allowed.`);
+      }
     }
   };
 

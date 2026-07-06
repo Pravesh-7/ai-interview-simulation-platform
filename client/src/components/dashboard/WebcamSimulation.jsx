@@ -8,6 +8,10 @@ export default function WebcamSimulation({ isRecording }) {
         audio={false} 
         mirrored={true}
         className="w-full h-auto object-cover opacity-90"
+        onUserMediaError={(err) => {
+          console.error("Webcam Error:", err);
+          alert("Camera could not be accessed! Please ensure your browser has camera permissions allowed and no other app is using it.");
+        }}
       />
       {isRecording && (
         <div className="absolute top-4 right-4 bg-red-600/90 text-white font-bold px-4 py-1.5 rounded-full animate-pulse flex items-center gap-2 shadow-lg backdrop-blur-sm">
