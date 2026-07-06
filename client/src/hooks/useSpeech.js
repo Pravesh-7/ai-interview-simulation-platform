@@ -16,10 +16,10 @@ export function useSpeech(setAnswers) {
 
     recognitionInstance.onresult = (event) => {
       let transcript = "";
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        transcript += event.results[i][0].transcript;
+      for (let i = 0; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript + " ";
       }
-      setAnswers(transcript);
+      setAnswers(transcript.trim());
     };
 
     recognitionInstance.onend = () => setIsRecording(false);
@@ -27,10 +27,18 @@ export function useSpeech(setAnswers) {
   }, [setAnswers]);
 
   const startRecording = () => {
-    if (!recognition) return;
+    if (!recognition) {
+      alert("Speech Recognition is not supported in this browser. Please use Chrome or Edge.");
+      return;
+    }
     setAnswers("");
-    recognition.start();
-    setIsRecording(true);
+    try {
+      recognition.start();
+      setIsRecording(true);
+    } catch (e) {
+      console.log(e);
+      alert("Microphone permission denied or error starting recording.");
+    }
   };
 
   const stopRecording = () => {

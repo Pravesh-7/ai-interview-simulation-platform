@@ -33,14 +33,10 @@ try {
   navigate("/login");
 
 } catch (err) {
-
   console.log(err);
-
-  toast.error("Registration Failed");
-
+  const errorMessage = err.response?.data?.message || "Registration Failed";
+  toast.error(errorMessage);
 }
-
-
 };
 
 return (

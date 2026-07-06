@@ -16,11 +16,6 @@ function InterviewPage() {
   const interviewId = state?.interviewId || null;
   const activeDifficulty = state?.activeDifficulty || "";
 
-  // If directly navigated without state, go to dashboard
-  if (!questions && !interviewId) {
-    return <Navigate to="/dashboard" />;
-  }
-
   const { evaluating, evaluateAnswers } = useInterviewAPI(token);
 
   const [answers, setAnswers] = useState("");
@@ -35,6 +30,11 @@ function InterviewPage() {
       onSuccess: (fb) => setFeedback(fb)
     });
   };
+
+  // If directly navigated without state, go to dashboard
+  if (!questions && !interviewId) {
+    return <Navigate to="/dashboard" />;
+  }
 
   return (
     <div className="flex min-h-screen bg-black text-white">

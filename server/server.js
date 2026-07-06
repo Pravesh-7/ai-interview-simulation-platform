@@ -14,7 +14,7 @@ const authMiddleware = require("./middleware/authMiddleware");
 
 const app = express();
 
-app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:5173" }));
+app.use(cors());
 app.use(express.json());
 
 const authLimiter = rateLimit({
